@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <title>{{title}}</title>
+
+    <!-- CSS  -->
+    <link href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link href='https://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
+    <link href="css/index.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+    <link rel="shortcut icon" href="images/favicon (9).ico" type="image/x-icon">
+    <link rel="icon" href="images/favicon (9).ico" type="image/x-icon">
+  </head>
+  <body>
+    <div id="index-banner" class="red white-text">
+      <div class="section no-pad-bot">
+        <div class="container valign">
+          <h1 class="header center white-text">{{title}}</h1>
+          <div class="row center">
+            <h5 class="header col s12 light white-text text-darken-2">{{subtitle}}</h5>
+            <p class="post-meta"><i style="color: #616161" class="fa fa-clock-o"></i>{{publishedOn}} <a href="#" style="color: #eee">{{authorName}}</a></p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="container" id="startPosts">
+      <div class="row">
+        <div class="col s12 m10 offset-m1 l9 offset-l1">
+          {{content}}
+        </div>
+      </div>
+    </div>
+
+    <footer class="page-footer red"></footer>
+
+
+    <!--  Scripts-->
+
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="js/materialize.js"></script>
+    <script src="js/init.js"></script>
+    <script>
+     // $(document).ready(function(){
+     //   $('.materialboxed').materialbox();
+     //    $('.parallax').parallax();
+     //     $('.button-collapse').sideNav();
+     // });
+    </script>
+    <script>
+     $('.head-link').click(function(e) {
+       e.preventDefault();
+
+       var goto = $(this).attr('href');
+
+       $('html, body').animate({
+         scrollTop: $(goto).offset().top
+       }, 800);
+     });
+
+    </script>
+
+  </body>
+</html>
