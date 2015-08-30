@@ -8,19 +8,11 @@ var clean = require('gulp-clean');
 var stripCSSComments = require('gulp-strip-css-comments');
 var merge = require('merge2');
 
-gulp.task('default', ['copyfonts','buildcss','codemirror-js', 'buildjs'], function(){});
+gulp.task('default', ['copyfonts','buildcss', 'buildjs'], function(){});
 
-gulp.task('copyfonts', function(){
+gulp.task('copyfonts', function () {
 	gulp.src('./font/**/*')
 		.pipe(gulp.dest('./dist/font'));
-});
-
-gulp.task('codemirror-js', function(){
-  gulp.src(['./codemirror/lib/codemirror.js',
-            './codemirror/mode/javascript/javascript.js',
-           ])
-    .pipe(concat('codemirror-build.js'))
-    .pipe(gulp.dest('./js/'));
 });
 
 gulp.task('buildcss', function () {
@@ -36,15 +28,29 @@ gulp.task('buildcss', function () {
   return merge(main, codemirror)
     .pipe(stripCSSComments())
     .pipe(concatCss('css/index.css'))
-    .pipe(minifyCss({compatibility: 'ie8'}))
+    .pipe(minifyCss())
     .pipe(gulp.dest('./dist'));
 });
 
 gulp.task('buildjs', function(){
-	return gulp.src('js/*.js')
-		.pipe(concat('all.js'))
+	var allJS = gulp.src([
+    './codemirror/lib/codemirror.js',
+    './codemirror/mode/javascript/javascript.js',
+    './test-runners/chai.js',
+    './test-runners/sinon.js',
+    './test-runners/sinon-chai.js',
+    './js/*.js',
+  ]);
+
+  return allJS
+  	.pipe(concat('all.js'))
 		.pipe(uglify())
 		.pipe(gulp.dest('./dist/js'));
+});
+
+gulp.task('watch', function () {
+  return gulp
+    .watch('./js/**/*.js', ['buildjs']);
 });
 
 gulp.task('clean', function () {
