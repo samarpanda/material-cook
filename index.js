@@ -1,4 +1,6 @@
 import {Observable} from 'rx';
+import moment from 'moment';
+import _ from lodash;
 
 const cook = function materialCook(content_) {
   content_ = content_.share();
