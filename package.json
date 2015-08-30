@@ -1,0 +1,27 @@
+{
+  "name": "tutoaster-material-cook",
+  "version": "0.1.0",
+  "description": "Material design based cook for tutoaster",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samarpanda/material-cook.git"
+  },
+  "keywords": [
+    "tutoaster",
+    "tutoaster-cook",
+    "material-design"
+  ],
+  "author": "ckhabra007@gmail.com (https://channikhabra.github.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/samarpanda/material-cook/issues"
+  },
+  "homepage": "https://github.com/samarpanda/material-cook",
+  "dependencies": {
+    "rx": "^3.1.1"
+  }
+}
