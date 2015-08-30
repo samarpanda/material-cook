@@ -1,6 +1,11 @@
 var gulp = require('gulp');
 var uncss = require('gulp-uncss');
 var concatCss = require('gulp-concat-css');
+var minifyCss = require('gulp-minify-css');
+var uglify = require('gulp-uglify');
+var concat = require('gulp-concat');
+
+gulp.task('default', ['copyfonts', 'concatcss', 'buildjs', 'copyhtml'], function(){});
 
 gulp.task('uncss', function () {
     return gulp.src('site.css')
@@ -17,10 +22,20 @@ gulp.task('copyfonts', function(){
 
 gulp.task('concatcss', function () {
   return gulp.src('css/*.css')
-    .pipe(concatCss("styles/bundle.css"))
-    .pipe(gulp.dest('out/'));
+    .pipe(concatCss("css/index.css"))
+    .pipe(minifyCss({compatibility: 'ie8'}))
+    .pipe(gulp.dest('./dist'));
 });
 
-gulp.task('copyimg', function(){
-	gulp.src('./images/')
+gulp.task('buildjs', function(){
+	return gulp.src('js/*.js')
+		.pipe(concat('all.js'))
+		.pipe(uglify())
+		.pipe(gulp.dest('./dist/js'));
 });
+
+gulp.task('copyhtml', function(){
+	return gulp.src('*.html')
+		.pipe(gulp.dest('./dist'));
+});
+
