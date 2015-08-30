@@ -5,7 +5,7 @@ var minifyCss = require('gulp-minify-css');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
 
-gulp.task('default', ['copyfonts', 'concatcss', 'buildjs', 'copyhtml'], function(){});
+gulp.task('default', ['copyfonts', 'concatcss', 'buildjs'], function(){});
 
 gulp.task('uncss', function () {
     return gulp.src('site.css')
@@ -33,9 +33,3 @@ gulp.task('buildjs', function(){
 		.pipe(uglify())
 		.pipe(gulp.dest('./dist/js'));
 });
-
-gulp.task('copyhtml', function(){
-	return gulp.src('*.html')
-		.pipe(gulp.dest('./dist'));
-});
-
