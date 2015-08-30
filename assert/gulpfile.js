@@ -4,24 +4,20 @@ var concatCss = require('gulp-concat-css');
 var minifyCss = require('gulp-minify-css');
 var uglify = require('gulp-uglify');
 var concat = require('gulp-concat');
+var clean = require('gulp-clean');
 
-gulp.task('default', ['copyfonts', 'concatcss', 'buildjs', 'copyhtml'], function(){});
-
-gulp.task('uncss', function () {
-    return gulp.src('site.css')
-        .pipe(uncss({
-            html: ['index.html', 'posts/**/*.html', 'http://example.com']
-        }))
-        .pipe(gulp.dest('./dist/css'));
-});
+gulp.task('default', ['copyfonts', 'buildcss', 'buildjs'], function(){});
 
 gulp.task('copyfonts', function(){
 	gulp.src('./font/**/*')
 		.pipe(gulp.dest('./dist/font'));
 });
 
-gulp.task('concatcss', function () {
-  return gulp.src('css/*.css')
+gulp.task('buildcss', function () {
+  return gulp.src('./css/*.css')
+    .pipe(uncss({
+        html: ['templates/*.html']
+    }))
     .pipe(concatCss("css/index.css"))
     .pipe(minifyCss({compatibility: 'ie8'}))
     .pipe(gulp.dest('./dist'));
@@ -34,8 +30,7 @@ gulp.task('buildjs', function(){
 		.pipe(gulp.dest('./dist/js'));
 });
 
-gulp.task('copyhtml', function(){
-	return gulp.src('*.html')
-		.pipe(gulp.dest('./dist'));
+gulp.task('clean', function () {
+  return gulp.src('./dist/*', {read: false})
+    .pipe(clean());
 });
-
