@@ -16,7 +16,8 @@ gulp.task('copyfonts', function(){
 gulp.task('buildcss', function () {
   return gulp.src('./css/*.css')
     .pipe(uncss({
-        html: ['templates/*.html']
+      html: ['templates/*.html'],
+      ignore: [/hljs/],
     }))
     .pipe(concatCss("css/index.css"))
     .pipe(minifyCss({compatibility: 'ie8'}))

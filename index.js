@@ -1,9 +1,9 @@
-import {Observable} from 'rx';
+import Rx, {Observable} from 'rx';
 import moment from 'moment';
 import _ from 'lodash';
 import path from 'path';
-import {readFile, writeFile, existsSync, mkdir} from 'fs';
-import {copy} from 'fs-extra';
+import {readFile, writeFile, existsSync, mkdirSync} from 'fs';
+import {copy, ensureDir, removeSync} from 'fs-extra';
 
 const readFile_ = Observable.fromNodeCallback(readFile);
 const writeFile_ = Observable.fromNodeCallback(writeFile);
@@ -11,13 +11,21 @@ const postTemplate = path.resolve(__dirname, 'assert/templates/post.html');
 
 const toastDir = path.resolve('./toast');
 
-const setupToastDir_ = () => {
-  if (existsSync(toastDir)) return Observable.return();
+Rx.config.longStackSupport = false;
 
-  return Observable.fromNodeCallback(mkdir)(toastDir)
-    .merge(
-      Observable.fromNodeCallback(copy)(path.resolve(__dirname, 'assert/dist'), path.resolve(toastDir))
-    );
+const setupToastDir_ = () => {
+  let copyDist_ = Observable.fromNodeCallback(copy)(path.resolve(__dirname, 'assert/dist'), path.resolve(toastDir, 'dist'), {clobber: true});
+
+  if (existsSync(toastDir)) {
+    removeSync(toastDir);
+  }
+  if (!existsSync(toastDir)) {
+    mkdirSync(toastDir);
+  }
+
+  return Observable.concat(
+    copyDist_
+  );
 };
 
 const cook = function materialCook(content_) {
@@ -49,7 +57,7 @@ const cook = function materialCook(content_) {
               title: content.meta.section,
               subtitle: postMeta.subtitle || '',
               authorName: postMeta.author || '',
-              publishedOn: new Date(),
+              publishedOn: moment().format('dddd D MMMM, YYYY'),
               post: content.content,
               code: content.code,
             },
@@ -75,11 +83,10 @@ const cook = function materialCook(content_) {
         });
 
   generatedPostsWrites_
-    .subscribe(
-      x => console.log(),
-      error => console.error(error),
-      () => console.log('Done! Cook is ready')
-    );
+    .subscribe({
+      onNext: x => console.log(),
+      onCompleted: () => console.log('Done! Cook is ready')
+    });
 };
 
 export default {
