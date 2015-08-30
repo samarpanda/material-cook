@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no"/>
+    <title>${title}</title>
+    <style>
+     .CodeMirror {
+       min-height: 500px;
+     }
+    </style>
+    <!-- CSS  -->
+    <link href='https://fonts.googleapis.com/css?family=Lora' rel='stylesheet' type='text/css'>
+    <link href="dist/css/index.css" type="text/css" rel="stylesheet" media="screen,projection"/>
+  </head>
+  <body>
+    <div id="index-banner" class="red white-text">
+      <div class="section no-pad-bot">
+        <div class="container valign">
+          <h1 class="header center white-text">${title}</h1>
+          <div class="row center">
+            <h5 class="header col s12 light white-text text-darken-2">${subtitle}</h5>
+            <p class="post-meta"><i style="color: #616161" class="fa fa-clock-o"></i>${publishedOn} <a href="#" style="color: #eee; font-size: 16px;">${authorName}</a></p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container" id="startPosts">
+      <div class="row">
+        <div class="col s12 m10 offset-m1 l9 offset-l1">
+          ${post}
+
+          <div id="editor" style="min-height: 500px; width: 100%;min-width: 700px;margin:40px;"></div>
+          <button class="waves-effect waves-light btn">Run</button>
+          <div id="editor-content" style="display:none;">${code}</div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="page-footer red"></footer>
+    <script src="./dist/js/all.js" type="text/javascript"></script>
+    <script src="http://chaijs.com/chai.js" type="text/javascript"></script>
+    <script type="text/javascript">
+     window.onload = function name(arg) {
+       window.editor = CodeMirror(document.getElementById("editor"),{
+         value: '/* Write your solution here */',
+         mode: "javascript"
+       })
+     }
+
+    </script>
+
+  </body>
+</html>

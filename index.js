@@ -8,10 +8,11 @@ import {copy, ensureDir, removeSync} from 'fs-extra';
 const readFile_ = Observable.fromNodeCallback(readFile);
 const writeFile_ = Observable.fromNodeCallback(writeFile);
 const postTemplate = path.resolve(__dirname, 'assert/templates/post.html');
+const testsTemplate = path.resolve(__dirname, 'assert/templates/exercise.html');
 
 const toastDir = path.resolve('./toast');
 
-Rx.config.longStackSupport = false;
+Rx.config.longStackSupport = true;
 
 const setupToastDir_ = () => {
   let copyDist_ = Observable.fromNodeCallback(copy)(path.resolve(__dirname, 'assert/dist'), path.resolve(toastDir, 'dist'), {clobber: true});
@@ -28,65 +29,62 @@ const setupToastDir_ = () => {
   );
 };
 
-const cook = function materialCook(content_) {
-  content_ = content_.share();
-
-  let postContent_ = content_
-        .filter(content => content.meta.type === 'content')
-        .map(content => ({
-          content: content.comments,
-          code: content.code,
-          meta: content.meta,
-        }));
-
-  let testsContent_ = content_
-        .filter(content => content.meta.type === 'tests')
-        .map(content => ({
-          meta: content.meta
-        }));
+const cook = function materialCook(slices_) {
+  let content_ = slices_.share();
 
   let postMeta_ = content_.take(1).pluck('meta');
 
-  let postHtml_ = Observable
+  content_ = content_
+    .filter(c => c.meta && typeof c.meta.type !== 'undefined')
+    .map(content => ({
+      content: content.comments,
+      meta: content.meta,
+      code: content.code
+    }));
+
+  let html_ =   content_
+        .flatMap(content => {
+          let templatePath = content.meta.type === 'tests' ? testsTemplate : postTemplate;
+          return readFile_(templatePath, 'utf-8');
+        }, (content, rawTemplate) => ({content, rawTemplate}) )
         .combineLatest(
-          postContent_,
           postMeta_,
-          readFile_(postTemplate),
-          (content, postMeta, rawTemplate) => ({
-            context: {
-              title: content.meta.section,
-              subtitle: postMeta.subtitle || '',
-              authorName: postMeta.author || '',
-              publishedOn: moment().format('dddd D MMMM, YYYY'),
-              post: content.content,
-              code: content.code,
-            },
-            rawTemplate,
-          })
-        )
-        .map(rawPost => ({
+          ({content, rawTemplate}, postMeta) => {
+            return {
+              context: {
+                title: content.meta.section,
+                subtitle: postMeta.subtitle || '',
+                authorName: postMeta.author || '',
+                publishedOn: moment().format('dddd D MMMM, YYYY'),
+                post: content.content,
+                code: content.code,
+                type: content.meta.type,
+              },
+              rawTemplate,
+            };
+          }
+        ).map(rawPost => ({
           title: rawPost.context.title,
           html: _.template(rawPost.rawTemplate)(rawPost.context),
-        }));
+          type: rawPost.context.type
+        }))
 
-  let generatedPostsWrites_ = postHtml_
-        .map(({html, title}) => ({
-          filepath: path.resolve(toastDir, `${title}.html`),
+  let htmlWrites_ = html_
+        .map(({html, title, type}) => ({
+          filepath: path.resolve(toastDir, type === 'content' ? `${title}.html` : `${title}-exercise.html`),
           filecontent: html,
         }))
-        .combineLatest(
-          setupToastDir_(toastDir),
-          (fileData) => fileData
-        )
         .flatMap(({filepath, filecontent}) => {
           return writeFile_(filepath, filecontent, 'utf-8');
         });
 
-  generatedPostsWrites_
-    .subscribe({
-      onNext: x => console.log(),
-      onCompleted: () => console.log('Done! Cook is ready')
-    });
+  setupToastDir_(toastDir)
+    .combineLatest(
+      htmlWrites_,
+      () => {return false;}
+    )
+    .doOnCompleted(() => console.log('Done! Toast is ready in ./toast'))
+    .subscribe();
 };
 
 export default {
